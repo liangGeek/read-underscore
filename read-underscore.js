@@ -117,11 +117,13 @@
         return type === 'function' || type === 'object' && !!obj;
     }
 
+    // dir 方向
     var createReduce = function(dir) {
         var reducer = function(obj, iteratee, memo, initial) {
             var keys = !isArrayLike(obj) && _.keys(obj),
                 length = (keys || obj).length,
                 index = dir > 0 ? 0 : length - 1;
+            // 是否有初始值
             if (!initial) {
                 memo = obj[keys ? keys[index] : index]
                 index += dir;
