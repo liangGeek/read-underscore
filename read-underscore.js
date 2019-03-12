@@ -45,7 +45,7 @@
             case 3: return function (value, index, collection) {
                 return func.call(context, value, index, collection);
             };
-            // todo accumulator
+            // creatReduce
             case 4: return function (accumulator, value, index, collection) {
                 return func.call(context, accumulator, value, index, collection);
             };
@@ -116,6 +116,33 @@
         var type = typeof obj;
         return type === 'function' || type === 'object' && !!obj;
     }
+
+    var createReduce = function(dir) {
+        var reducer = function(obj, iteratee, memo, initial) {
+            var keys = !isArrayLike(obj) && _.keys(obj),
+                length = (keys || obj).length,
+                index = dir > 0 ? 0 : length - 1;
+            if (!initial) {
+                memo = obj[keys ? keys[index] : index]
+                index += dir;
+            }
+            for(; index >= 0 && index < length; index += dir) {
+                var currentKey = keys ? keys[index] : index;
+                memo = iteratee(memo, obj[currentKey], currentKey, obj);
+            }
+            return memo;
+        };
+
+        return function(obj, iteratee, memo, context) {
+            var initial = arguments.length >= 3;
+            iteratee = optimizedCb(iteratee, context, 4);
+            return reducer(obj, iteratee, memo, initial);
+        };
+    }
+
+    _.reduce = _.reduceLeft = _.foldl = _.inject = createReduce(1);
+
+    _.reduceRight = _.foldr = createReduce(-1);
 
 }())
 
