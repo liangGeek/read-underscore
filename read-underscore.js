@@ -85,6 +85,7 @@
     return obj != null && hasOwnProperty.call(obj, path);
   }
 
+  // 属性数组，深层查找
   var deepGet = function(obj, path) {
     var length = path.length;
     for (var i = 0; i < length; i++) {
@@ -139,6 +140,15 @@
     // todo
     return keys;
   }
+
+  _.allKeys = function(obj) {
+    if (!_.isObject(obj)) return [];
+    var keys = [];
+    for (var key in obj) keys.push(key);
+    // Ahem, IE < 9.
+    if (hasEnumBug) collectNonEnumProps(obj, keys);
+    return keys;
+  };
 
   // todo why 'function'
   _.isObject = function (obj) {
@@ -199,6 +209,27 @@
       return deepGet(obj, path);
     };
   };
+
+  var createAssigner = function(keyFunc, defaults) {
+    return function(obj) {
+      var length = arguments;
+      if (defaults) obj = Object(obj);
+      if (length < 2 || obj == null) return obj;
+      for (var i = 1; i < length; i++) {
+        var source = arguments[i],
+            keys = keyFunc(source),
+            keysLength = keys.length;
+        for (var j = 0; j < keysLength; j++) {
+          var key = keys[j];
+          if (!defaults || obj[key] === void 0) obj[key] = source[key]; 
+        }
+      }  
+    }
+  }
+
+  _.extend = createAssigner(_.allKeys);
+
+  _.extendOwn = _.assign = createAssigner(_.keys);
 
   // Utility
   _.identity = function (value) {
