@@ -151,6 +151,17 @@
     return _.filter(obj, _.negate(cb(predicate)), context);
   }
 
+  _.every = _.all = function(obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length;
+    for (var i = 0; i < length; i++) {
+      var key = keys ? obj[keys[i]] : i;
+      if (!predicate(obj[key], key, obj)) return false; 
+    }
+    return true;
+  }
+
   var createPredicateIndexFinder = function(dir) {
     return function(array, predicate, context) {
       predicate = cb(predicate, context);
