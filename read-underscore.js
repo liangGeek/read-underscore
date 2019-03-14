@@ -66,7 +66,7 @@
     // 为函数
     if (_.isFunction(value)) return optimizedCb(value, context, argCount);
     // 为非数组对象
-    if (_.isObject(value) && !_.isArray()) return ''; // todo
+    if (_.isObject(value) && !_.isArray()) return _.matcher(value);
     // 数组或者字符串
     return _.property(value);
   }
@@ -111,9 +111,10 @@
         iteratee(obj[i], i, obj);
       }
     } else {
-      var keys = _.keys(obj);
+      var keys = _.keys(obj), key;
       for (i = 0, length = keys.length; i < length; i++) {
-        iteratee(obj[keys[i]], keys[i], obj);
+        key = keys[i];
+        iteratee(obj[key], key, obj);
       }
     }
     return obj;
@@ -130,6 +131,40 @@
     }
     return results;
   }
+
+  _.find = _.detect = function(obj, predicate, context) {
+    var keyFinder = isArrayLike(obj) ? _.findIndex : _.findKey;
+    var key = keyFinder(obj, predicate, context);
+    if (key !== void 0 && key !== -1) return obj[key];
+  }
+
+  _.filter = _.select = function(obj, predicate, context) {
+    var results = [];
+    predicate = cb(predicate, context);
+    _.each(obj, function(value, index, list) {
+      if (predicate(value, index, list)) results.push(value);
+    })
+    return results;
+  }
+
+  _.reject = function(obj, predicate, context) {
+    return _.filter(obj, _.negate(cb(predicate)), context);
+  }
+
+  var createPredicateIndexFinder = function(dir) {
+    return function(array, predicate, context) {
+      predicate = cb(predicate, context);
+      var length = getLength(array);
+      var index = dir > 0 ? 0 : length - 1;
+      for (; index <= length; index += dir) {
+        if (predicate(array[index], index, array)) return index;
+      }
+      return -1;
+    }
+  }
+
+  _.findIndex = createPredicateIndexFinder(1);
+  _.findLastIndex = createPredicateIndexFinder(-1);
 
   // object
   _.keys = function (obj) {
@@ -154,6 +189,34 @@
   _.isObject = function (obj) {
     var type = typeof obj;
     return type === 'function' || type === 'object' && !!obj;
+  }
+
+  _.isMatch = function(object, attrs) {
+    var keys = _.keys(attrs), length = keys.length;
+    if (object == null) return !length;
+    // todo Object 转成对象?
+    var obj = Object(object);
+    for (var i = 0; i < length; i++) {
+      var key = keys[i];
+      if (obj[key] !== attrs[key] || !(key in obj)) return false;
+    }
+    return true;
+  }
+
+  _.matcher = _.matches = function(attrs) {
+    attrs = _.extendOwn({}, attrs);
+    return function(obj) {
+      return _.isMatch(obj, attrs);
+    }
+  }
+
+  _.findKey = function(obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = _.keys(obj), length = keys.length, key;
+    for (var i = 0; i < length; i++) {
+      key = keys[i];
+      if (predicate(obj[key], key, obj)) return key;
+    }
   }
 
 
@@ -230,6 +293,16 @@
   _.extend = createAssigner(_.allKeys);
 
   _.extendOwn = _.assign = createAssigner(_.keys);
+
+
+  // function
+
+  _.negate = function(predicate) {
+    return function() {
+      return !predicate.apply(this, arguments)
+    }
+  }
+
 
   // Utility
   _.identity = function (value) {
