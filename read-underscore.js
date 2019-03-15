@@ -86,7 +86,7 @@
   }
 
   // 属性数组，深层查找
-  var deepGet = function(obj, path) {
+  var deepGet = function (obj, path) {
     var length = path.length;
     for (var i = 0; i < length; i++) {
       if (obj == null) return void 0;
@@ -132,165 +132,6 @@
     return results;
   }
 
-  _.find = _.detect = function(obj, predicate, context) {
-    var keyFinder = isArrayLike(obj) ? _.findIndex : _.findKey;
-    var key = keyFinder(obj, predicate, context);
-    if (key !== void 0 && key !== -1) return obj[key];
-  }
-
-  _.filter = _.select = function(obj, predicate, context) {
-    var results = [];
-    predicate = cb(predicate, context);
-    _.each(obj, function(value, index, list) {
-      if (predicate(value, index, list)) results.push(value);
-    })
-    return results;
-  }
-
-  _.reject = function(obj, predicate, context) {
-    return _.filter(obj, _.negate(cb(predicate)), context);
-  }
-
-  _.every = _.all = function(obj, predicate, context) {
-    predicate = cb(predicate, context);
-    var keys = !isArrayLike(obj) && _.keys(obj),
-        length = (keys || obj).length;
-    for (var i = 0; i < length; i++) {
-      var key = keys ? obj[keys[i]] : i;
-      if (!predicate(obj[key], key, obj)) return false; 
-    }
-    return true;
-  }
-
-  _.some = _.any = function(obj, predicate, context) {
-    predicate = cb(predicate, context);
-    var keys = !isArrayLike(obj) && _.keys(obj),
-        length = keys.length;
-    for (var i = 0; i < length; i++) {
-      var key = keys ? keys[i] : i;
-      if (predicate(obj[ke], key, obj)) return true;
-    }
-    return false;
-  }
-
-  var createPredicateIndexFinder = function(dir) {
-    return function(array, predicate, context) {
-      predicate = cb(predicate, context);
-      var length = getLength(array);
-      var index = dir > 0 ? 0 : length - 1;
-      for (; index <= length; index += dir) {
-        if (predicate(array[index], index, array)) return index;
-      }
-      return -1;
-    }
-  }
-
-  _.findIndex = createPredicateIndexFinder(1);
-  _.findLastIndex = createPredicateIndexFinder(-1);
-
-  // 二分法
-  _.sortedIndex = function(array, obj, iteratee, context) {
-    iteratee = cb(iteratee, context, 1);
-    var value = iteratee(obj);
-    var low = 0; high = getLength(array);
-    while (low < high) {
-      var mid = Math.floor((low + high) / 2);
-      if (array[mid] < value) low = mid + 1; else high = mid;
-    }
-    return low;
-  };
-
-  var createIndexFinder = function(dir, predicateFind, sortedIndex) {
-    return function(array, item, idx) {
-      var i = 0, length = getLength(array);
-      if (typeof idx == 'number') {
-        if (dir > 0) {
-          i = idx >= 0 ? idx : Math.max(idx + length, i);
-        } else {
-          length = idx >= 0 ? Math.min(length, idx + 1) : idx + length + 1;
-        }
-      } else if (sortedIndex && idx && length) {
-        idx = sortedIndex(array, item);
-        return array[idx] === item ? idx : -1;
-      }
-      // NaN 不和任何数相等, 包括自己
-      if (item !== item) {
-        idx = predicateFind(slice.call(array, i, length), _.isNaN);
-        return idx >= 0 ? idx + i : -1;
-      }
-
-      for (idx = dir > 0 ? i : length -1; idx < length && idx >= 0; idx += dir) {
-        if (array[idx] === item) return idx;
-      }
-      return -1;
-    }
-  }
-
-  _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex);
-  _.lastIndexOf = createIndexFinder(-1, _.findLastIndex)
-
-  // object
-  _.keys = function (obj) {
-    if (!_.isObject(obj)) return [];
-    if (nativeKeys) return nativeKeys(obj);
-    var keys = [];
-    for (var key in obj) if (has(obj, key)) keys.push(key);
-    // todo
-    return keys;
-  }
-
-  _.allKeys = function(obj) {
-    if (!_.isObject(obj)) return [];
-    var keys = [];
-    for (var key in obj) keys.push(key);
-    // Ahem, IE < 9.
-    if (hasEnumBug) collectNonEnumProps(obj, keys);
-    return keys;
-  };
-
-  // todo why 'function'
-  _.isObject = function (obj) {
-    var type = typeof obj;
-    return type === 'function' || type === 'object' && !!obj;
-  }
-
-  _.isMatch = function(object, attrs) {
-    var keys = _.keys(attrs), length = keys.length;
-    if (object == null) return !length;
-    // todo Object 转成对象?
-    var obj = Object(object);
-    for (var i = 0; i < length; i++) {
-      var key = keys[i];
-      if (obj[key] !== attrs[key] || !(key in obj)) return false;
-    }
-    return true;
-  }
-
-  _.matcher = _.matches = function(attrs) {
-    attrs = _.extendOwn({}, attrs);
-    return function(obj) {
-      return _.isMatch(obj, attrs);
-    }
-  }
-
-  _.findKey = function(obj, predicate, context) {
-    predicate = cb(predicate, context);
-    var keys = _.keys(obj), length = keys.length, key;
-    for (var i = 0; i < length; i++) {
-      key = keys[i];
-      if (predicate(obj[key], key, obj)) return key;
-    }
-  }
-
-
-  // todo
-  var nodelist = root.document && root.document.childNodes;
-  if (typeof /./ != 'function' && typeof Int8Array != 'object' && typeof nodelist != 'function') {
-    _.isFunction = function (obj) {
-      return typeof obj == 'function' || false;
-    };
-  }
-
   // dir 方向
   var createReduce = function (dir) {
     var reducer = function (obj, iteratee, memo, initial) {
@@ -317,8 +158,182 @@
   }
 
   _.reduce = _.reduceLeft = _.foldl = _.inject = createReduce(1);
-
   _.reduceRight = _.foldr = createReduce(-1);
+
+  _.find = _.detect = function (obj, predicate, context) {
+    var keyFinder = isArrayLike(obj) ? _.findIndex : _.findKey;
+    var key = keyFinder(obj, predicate, context);
+    if (key !== void 0 && key !== -1) return obj[key];
+  }
+
+  _.filter = _.select = function (obj, predicate, context) {
+    var results = [];
+    predicate = cb(predicate, context);
+    _.each(obj, function (value, index, list) {
+      if (predicate(value, index, list)) results.push(value);
+    })
+    return results;
+  }
+
+  _.reject = function (obj, predicate, context) {
+    return _.filter(obj, _.negate(cb(predicate)), context);
+  }
+
+  _.every = _.all = function (obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
+      length = (keys || obj).length;
+    for (var i = 0; i < length; i++) {
+      var key = keys ? obj[keys[i]] : i;
+      if (!predicate(obj[key], key, obj)) return false;
+    }
+    return true;
+  }
+
+  _.some = _.any = function (obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
+      length = keys.length;
+    for (var i = 0; i < length; i++) {
+      var key = keys ? keys[i] : i;
+      if (predicate(obj[ke], key, obj)) return true;
+    }
+    return false;
+  }
+
+  var createPredicateIndexFinder = function (dir) {
+    return function (array, predicate, context) {
+      predicate = cb(predicate, context);
+      var length = getLength(array);
+      var index = dir > 0 ? 0 : length - 1;
+      for (; index <= length; index += dir) {
+        if (predicate(array[index], index, array)) return index;
+      }
+      return -1;
+    }
+  }
+
+  _.findIndex = createPredicateIndexFinder(1);
+  _.findLastIndex = createPredicateIndexFinder(-1);
+
+  // 二分法
+  _.sortedIndex = function (array, obj, iteratee, context) {
+    iteratee = cb(iteratee, context, 1);
+    var value = iteratee(obj);
+    var low = 0; high = getLength(array);
+    while (low < high) {
+      var mid = Math.floor((low + high) / 2);
+      if (array[mid] < value) low = mid + 1; else high = mid;
+    }
+    return low;
+  };
+
+  var createIndexFinder = function (dir, predicateFind, sortedIndex) {
+    return function (array, item, idx) {
+      var i = 0, length = getLength(array);
+      if (typeof idx == 'number') {
+        if (dir > 0) {
+          i = idx >= 0 ? idx : Math.max(idx + length, i);
+        } else {
+          length = idx >= 0 ? Math.min(length, idx + 1) : idx + length + 1;
+        }
+      } else if (sortedIndex && idx && length) {
+        idx = sortedIndex(array, item);
+        return array[idx] === item ? idx : -1;
+      }
+      // NaN 不和任何数相等, 包括自己
+      if (item !== item) {
+        idx = predicateFind(slice.call(array, i, length), _.isNaN);
+        return idx >= 0 ? idx + i : -1;
+      }
+
+      for (idx = dir > 0 ? i : length - 1; idx < length && idx >= 0; idx += dir) {
+        if (array[idx] === item) return idx;
+      }
+      return -1;
+    }
+  }
+
+  _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex);
+  _.lastIndexOf = createIndexFinder(-1, _.findLastIndex); // 从后向前找 无顺序
+
+  _.contains = _.includes = _.include = function (obj, item, fromIndex, guard) {
+    if (!isArrayLike(obj)) obj = _.values(obj);
+    if (typeof fromIndex != 'number' || guard) fromIndex = 0;
+    return _.indexOf(obj, item, fromIndex) >= 0;
+  }
+
+  // object
+  _.keys = function (obj) {
+    if (!_.isObject(obj)) return [];
+    if (nativeKeys) return nativeKeys(obj);
+    var keys = [];
+    for (var key in obj) if (has(obj, key)) keys.push(key);
+    // todo
+    return keys;
+  }
+
+  _.allKeys = function (obj) {
+    if (!_.isObject(obj)) return [];
+    var keys = [];
+    for (var key in obj) keys.push(key);
+    // Ahem, IE < 9.
+    if (hasEnumBug) collectNonEnumProps(obj, keys);
+    return keys;
+  };
+
+  // todo why 'function'
+  _.isObject = function (obj) {
+    var type = typeof obj;
+    return type === 'function' || type === 'object' && !!obj;
+  }
+
+  _.isMatch = function (object, attrs) {
+    var keys = _.keys(attrs), length = keys.length;
+    if (object == null) return !length;
+    // todo Object 转成对象?
+    var obj = Object(object);
+    for (var i = 0; i < length; i++) {
+      var key = keys[i];
+      if (obj[key] !== attrs[key] || !(key in obj)) return false;
+    }
+    return true;
+  }
+
+  _.matcher = _.matches = function (attrs) {
+    attrs = _.extendOwn({}, attrs);
+    return function (obj) {
+      return _.isMatch(obj, attrs);
+    }
+  }
+
+  _.findKey = function (obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = _.keys(obj), length = keys.length, key;
+    for (var i = 0; i < length; i++) {
+      key = keys[i];
+      if (predicate(obj[key], key, obj)) return key;
+    }
+  }
+
+  _.values = function (obj) {
+    var keys = _.keys(obj);
+    var length = keys.length;
+    var values = Array(length);
+    for (var i = 0; i < length; i++) {
+      values[i] = obj[keys[i]];
+    }
+    return values;
+  }
+
+  // todo
+  var nodelist = root.document && root.document.childNodes;
+  if (typeof /./ != 'function' && typeof Int8Array != 'object' && typeof nodelist != 'function') {
+    _.isFunction = function (obj) {
+      return typeof obj == 'function' || false;
+    };
+  }
+
 
   // 类型判断
   _.each(['Function', 'String', 'Number', 'Date', 'RegExp', 'Error', 'Symbol', 'Map', 'WeakMap', 'Set', 'WeakSet'], function (name) {
@@ -327,7 +342,7 @@
     }
   });
 
-  _.isNaN = function(obj) {
+  _.isNaN = function (obj) {
     return _.isNumber(obj) && isNaN(obj);
   }
 
@@ -340,20 +355,20 @@
     };
   };
 
-  var createAssigner = function(keyFunc, defaults) {
-    return function(obj) {
+  var createAssigner = function (keyFunc, defaults) {
+    return function (obj) {
       var length = arguments;
       if (defaults) obj = Object(obj);
       if (length < 2 || obj == null) return obj;
       for (var i = 1; i < length; i++) {
         var source = arguments[i],
-            keys = keyFunc(source),
-            keysLength = keys.length;
+          keys = keyFunc(source),
+          keysLength = keys.length;
         for (var j = 0; j < keysLength; j++) {
           var key = keys[j];
-          if (!defaults || obj[key] === void 0) obj[key] = source[key]; 
+          if (!defaults || obj[key] === void 0) obj[key] = source[key];
         }
-      }  
+      }
     }
   }
 
@@ -364,8 +379,8 @@
 
   // function
 
-  _.negate = function(predicate) {
-    return function() {
+  _.negate = function (predicate) {
+    return function () {
       return !predicate.apply(this, arguments)
     }
   }
