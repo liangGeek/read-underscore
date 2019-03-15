@@ -188,6 +188,7 @@
   _.findIndex = createPredicateIndexFinder(1);
   _.findLastIndex = createPredicateIndexFinder(-1);
 
+  // 二分法
   _.sortedIndex = function(array, obj, iteratee, context) {
     iteratee = cb(iteratee, context, 1);
     var value = iteratee(obj);
@@ -204,16 +205,29 @@
       var i = 0, length = getLength(array);
       if (typeof idx == 'number') {
         if (dir > 0) {
-          i = idx >= 0 ? 0 : Math.max(idx + length, i);
+          i = idx >= 0 ? idx : Math.max(idx + length, i);
         } else {
           length = idx >= 0 ? Math.min(length, idx + 1) : idx + length + 1;
         }
+      } else if (sortedIndex && idx && length) {
+        idx = sortedIndex(array, item);
+        return array[idx] === item ? idx : -1;
       }
-      // todo
+      // NaN 不和任何数相等, 包括自己
+      if (item !== item) {
+        idx = predicateFind(slice.call(array, i, length), _.isNaN);
+        return idx >= 0 ? idx + i : -1;
+      }
+
+      for (idx = dir > 0 ? i : length -1; idx < length && idx >= 0; idx += dir) {
+        if (array[idx] === item) return idx;
+      }
+      return -1;
     }
   }
 
-  _.indexOf = createIndexFinder()
+  _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex);
+  _.lastIndexOf = createIndexFinder(-1, _.findLastIndex)
 
   // object
   _.keys = function (obj) {
@@ -311,7 +325,11 @@
     _['is' + name] = function (obj) {
       return toString.call(obj) === '[object ' + name + ']';
     }
-  })
+  });
+
+  _.isNaN = function(obj) {
+    return _.isNumber(obj) && isNaN(obj);
+  }
 
   _.property = function (path) {
     if (!_.isArray(path)) {
