@@ -162,6 +162,17 @@
     return true;
   }
 
+  _.some = _.any = function(obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
+        length = keys.length;
+    for (var i = 0; i < length; i++) {
+      var key = keys ? keys[i] : i;
+      if (predicate(obj[ke], key, obj)) return true;
+    }
+    return false;
+  }
+
   var createPredicateIndexFinder = function(dir) {
     return function(array, predicate, context) {
       predicate = cb(predicate, context);
@@ -176,6 +187,33 @@
 
   _.findIndex = createPredicateIndexFinder(1);
   _.findLastIndex = createPredicateIndexFinder(-1);
+
+  _.sortedIndex = function(array, obj, iteratee, context) {
+    iteratee = cb(iteratee, context, 1);
+    var value = iteratee(obj);
+    var low = 0; high = getLength(array);
+    while (low < high) {
+      var mid = Math.floor((low + high) / 2);
+      if (array[mid] < value) low = mid + 1; else high = mid;
+    }
+    return low;
+  };
+
+  var createIndexFinder = function(dir, predicateFind, sortedIndex) {
+    return function(array, item, idx) {
+      var i = 0, length = getLength(array);
+      if (typeof idx == 'number') {
+        if (dir > 0) {
+          i = idx >= 0 ? 0 : Math.max(idx + length, i);
+        } else {
+          length = idx >= 0 ? Math.min(length, idx + 1) : idx + length + 1;
+        }
+      }
+      // todo
+    }
+  }
+
+  _.indexOf = createIndexFinder()
 
   // object
   _.keys = function (obj) {
