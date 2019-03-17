@@ -263,6 +263,18 @@
     return _.indexOf(obj, item, fromIndex) >= 0;
   }
 
+  _.pluck = function(obj, key) {
+    return _.map(obj, _.property(key));
+  }
+
+  _.where = function(obj, attrs) {
+    return _.filter(obj, _.matcher(attrs));
+  }
+
+  _.findWhere = function(obj, attrs) {
+    return _.find(obj, _.matcher(attrs));
+  };
+
   // object
   _.keys = function (obj) {
     if (!_.isObject(obj)) return [];
