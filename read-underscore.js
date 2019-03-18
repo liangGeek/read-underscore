@@ -85,6 +85,7 @@
     return obj != null && hasOwnProperty.call(obj, path);
   }
 
+  // 当有多个参数，可以把后面的参数放到list里
   var restArguments = function(func, startIndex) {
     startIndex = startIndex == null ? func.length - 1 : +startIndex;
     return function() {
@@ -441,11 +442,12 @@
     }
   }
 
-
   // Utility
   _.identity = function (value) {
     return value;
   }
+
+  _.restArguments = restArguments;
 
 }())
 
