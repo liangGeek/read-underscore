@@ -410,6 +410,30 @@
     if (has(result, key)) result[key]++; else result[key] = 1;
   });
 
+  _.sample = function(obj, n, guard) {
+    if (n == null || guard) {
+      if (!isArrayLike(obj)) obj = _.values(obj);
+      return obj[_.random(obj.length - 1)];
+    }
+    var sample = isArrayLike(obj) ? _.clone(obj) : _.values(obj);
+    var length = getLength(sample);
+    n = Math.max(Math.min(n, length), 0);
+    var last = length - 1;
+    for (var index = 0; index < n; index++) {
+      var rand = _.random(index, last);
+      var temp = sample[index];
+      sample[index] = sample[rand];
+      sample[rand] = temp;
+    }
+    return sample.slice(0, n);
+  };
+
+
+  // todo 洗牌算法
+  _.shuffle = function(obj) {
+    return _.sample(obj, Infinity);
+  };
+
   // object
   _.keys = function (obj) {
     if (!_.isObject(obj)) return [];
@@ -523,6 +547,11 @@
 
   _.extendOwn = _.assign = createAssigner(_.keys);
 
+  _.clone = function(obj) {
+    if (!_.isObject(obj)) return obj;
+    return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
+  }
+
 
   // function
 
@@ -538,6 +567,14 @@
   }
 
   _.restArguments = restArguments;
+
+  _.random = function(min, max) {
+    if (max == null) {
+      max = min;
+      min = 0;
+    }
+    return min + Math.floor(Math.random() * (max - min + 1));
+  };
 
 }())
 
