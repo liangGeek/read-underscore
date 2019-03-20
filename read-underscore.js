@@ -446,6 +446,15 @@
     return _.values(obj);
   };
 
+  _.size = function(obj) {
+    if (obj == null) return 0;
+    return isArrayLike(obj) ? obj.length : _.keys(obj).length;
+  };
+
+  _.partition = group(function(result, value, pass) {
+    result[pass ? 0 : 1].push(value);
+  }, true);
+
   // object
   _.keys = function (obj) {
     if (!_.isObject(obj)) return [];
