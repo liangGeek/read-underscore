@@ -496,7 +496,7 @@
           while (j < len) output[idx++] = value[j++];
         } else {
           flatten(value, shallow, strict, output);
-          idx = output.length;
+          idx = output.length; // output长度有可能会变 重新赋值
         }
       } else if (!strict) {
         output[idx++] = value;
@@ -504,6 +504,21 @@
     }
     return output;
   };
+
+  _.flatten = function(array, shallow) {
+    return flatten(array, shallow, false)
+  }
+
+  _.difference = restArguments(function(array, rest) {
+    rest = flatten(rest, true, true);
+    return _.filter(array, function(value){
+      return !_.contains(rest, value);
+    });
+  });
+
+  _.without = restArguments(function(array, otherArrays) {
+    return _.difference(array, otherArrays);
+  });
 
   // object
   // ---------------------------------------------------
