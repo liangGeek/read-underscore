@@ -127,6 +127,8 @@
   };
 
   // collection
+  // -----------------------------------
+
   _.each = _.foreach = function (obj, iteratee, context) {
     iteratee = optimizedCb(iteratee, context);
     var i, length;
@@ -456,6 +458,9 @@
     result[pass ? 0 : 1].push(value);
   }, true);
 
+  // Array
+  // -----------------------------------
+
   _.first = _.head = _.take = function(array, n, guard) {
     if (array == null || array.length < 1) return n == null ? void 0 : [];
     if (n == null || guard) return array[0];
@@ -476,7 +481,32 @@
     return slice.call(array, n == null || guard ? 1 : n);
   };
 
+  _.compact = function(array) {
+    return _.filter(array, Boolean);
+  };
+
+  var flatten = function(input, shallow, strict, output) {
+    output = output || [];
+    var idx = output.length;
+    for (var i = 0, length = getLength(input); i < length; i++) {
+      var value = input[i];
+      if (isArrayLike(value) && (_.isArray(value) || _.isArguments(value))) {
+        if (shallow) {
+          var j = 0, len = value.length;
+          while (j < len) output[idx++] = value[j++];
+        } else {
+          flatten(value, shallow, strict, output);
+          idx = output.length;
+        }
+      } else if (!strict) {
+        output[idx++] = value;
+      }
+    }
+    return output;
+  };
+
   // object
+  // ---------------------------------------------------
   _.keys = function (obj) {
     if (!_.isObject(obj)) return [];
     if (nativeKeys) return nativeKeys(obj);
