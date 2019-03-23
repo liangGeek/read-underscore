@@ -520,6 +520,7 @@
     return _.difference(array, otherArrays);
   });
 
+  // tod
   _.uniq = _.unique = function(array, isSorted, iteratee, context) {
     if (!_.isBoolean(isSorted)) {
       context = iteratee;
@@ -550,6 +551,21 @@
   _.union = restArguments(function(arrays) {
     return _.uniq(flatten(arrays, true, true));
   });
+
+  _.intersection = function(array) {
+    var result = [];
+    argsLength = arguments.length;
+    for (var i = 0; i < array; i++) {
+      var item = array[i];
+      if (_.includes(result, item)) continue;
+      var j;
+      for (j = 1; j < argsLength; j++) {
+        if (!_.include(arguments[i], item)) break;
+      }
+      if (j === arguments.length) result.push(item);
+    }
+    return result;
+  }
 
   // object
   // ---------------------------------------------------
