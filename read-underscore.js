@@ -126,6 +126,16 @@
     return typeof length === 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
   };
 
+  var Ctor = function(){};
+  var baseCreate = function(prototype) {
+    if (!_.isObject(prototype)) return {};
+    if (nativeCreate) return nativeCreate(prototype);
+    Ctor.prototype = prototype;
+    var obj = new Ctor;
+    Ctor.prototype = null;
+    return obj;
+  }
+
   // collection
   // -----------------------------------
 
@@ -731,6 +741,31 @@
       pairs[i] = [currentKey, obj[currentKey]];
     }
     return pairs;
+  }
+  
+  _.invert = function(obj) {
+    var keys = _.keys(obj),
+        length = keys.length;
+        results = {};
+    for (var i = 0; i < length; i++) {
+      var currentKey = keys[i];
+      results[obj[currentKey]] = currentKey;
+    }
+    return results;
+  }
+
+  _.create = function(prototype, props) {
+    var result = baseCreate(prototype);
+    if (props) return _.extendOwn(result, props);
+    return result;
+  }
+
+  _.funciotns = _.methods = function(obj) {
+    var names = [];
+    for (var key in obj) {
+      if (_.isFunction(obj[key])) names.push(key);
+    }
+    return names.sort();
   }
 
   // function
