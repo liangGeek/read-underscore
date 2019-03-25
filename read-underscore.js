@@ -805,6 +805,28 @@
     return _.pick(obj, iteratee, context);
   })
 
+  _.defaults = createAssigner(_.allKeys, true);
+
+  // 中间结果进行操作
+  _.tap = function(obj, interceptor) {
+    interceptor(obj);
+    return obj;
+  };
+
+  _.has = function(obj, path) {
+    if (!_.isArray(path)) {
+      return has(obj, path);
+    }
+    var length = path.length;
+    for (var i = 0; i < length; i++) {
+      var key = path[i];
+      if (!has(obj, key)) {
+        return false;
+      }
+    }
+    return !!length;
+  }
+
   // function
 
   _.negate = function (predicate) {
