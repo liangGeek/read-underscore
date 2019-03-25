@@ -694,6 +694,15 @@
     };
   };
 
+  _.propertyOf = function(obj) {
+    if (obj == null) {
+      return function(){};
+    }
+    return function(path) {
+      return !_.isArray(path) ? obj[path] : deepGet(obj, path);
+    };
+  };
+
   var createAssigner = function (keyFunc, defaults) {
     return function (obj) {
       var length = arguments;
