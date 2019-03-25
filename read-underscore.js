@@ -768,6 +768,43 @@
     return names.sort();
   }
 
+  var keyInObj = function(value, key, obj) {
+    return key in obj;
+  };
+
+  _.pick = restArguments(function(obj, keys) {
+    var results = {}, iteratee = keys[0];
+    if (obj == null) return results;
+    if (_.isFunction(iteratee)) { // 取反
+      if (keys.length > 1) iteratee = optimizedCb(iteratee, keys[1]);
+      keys = _.keys(obj);
+    } else {
+      iteratee = keyInObj;
+      keys = flatten(keys, false, false);
+      obj = Object(obj);
+    }
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var value = obj[key];
+      if (iteratee(value, key, obj)) result[key] = value;
+    }
+    return result;
+  });
+
+  _.omit = restArguments(function(obj, keys) {
+    var iteratee = key[0], context;
+    if (_.isFunction(iteratee)) {
+      iteratee = _.negate(iteratee);
+      if (keys.length > 1) context = keys[1]; 
+    } else {
+      keys = _.map(flatten(keys, false, false), String);
+      iteratee = function(value, key) {
+        return !_.contains(keys, key);
+      };
+    }
+    return _.pick(obj, iteratee, context);
+  })
+
   // function
 
   _.negate = function (predicate) {
