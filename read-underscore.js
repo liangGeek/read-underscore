@@ -710,6 +710,28 @@
     return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
   }
 
+  _.mapOject = function(obj, iteratee, context) {
+    iteratee = cb(iteratee, context);
+    var keys = _.keys(obj),
+        length = keys.length;
+        results = {};
+    for (var i = 0; i < length; i++) {
+      var currentKey = keys[i];
+      results[currentKey] = iteratee(obj[currentKey], currentKey, obj);
+    }
+    return results;
+  }
+
+  _.pairs = function(obj) {
+    var keys = _.keys(obj),
+        length = keys.length;
+        pairs = Array(length);
+    for (var i = 0; i < length; i++) {
+      var currentKey = keys[i]
+      pairs[i] = [currentKey, obj[currentKey]];
+    }
+    return pairs;
+  }
 
   // function
 
