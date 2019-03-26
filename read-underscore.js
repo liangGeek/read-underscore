@@ -621,24 +621,6 @@
     return keys;
   };
 
-  // todo why 'function'
-  _.isObject = function (obj) {
-    var type = typeof obj;
-    return type === 'function' || type === 'object' && !!obj;
-  }
-
-  _.isMatch = function (object, attrs) {
-    var keys = _.keys(attrs), length = keys.length;
-    if (object == null) return !length;
-    // todo Object 转成对象?
-    var obj = Object(object);
-    for (var i = 0; i < length; i++) {
-      var key = keys[i];
-      if (obj[key] !== attrs[key] || !(key in obj)) return false;
-    }
-    return true;
-  }
-
   _.matcher = _.matches = function (attrs) {
     attrs = _.extendOwn({}, attrs);
     return function (obj) {
@@ -835,6 +817,61 @@
     }
     return !!length;
   }
+
+  _.isElement = function(obj) {
+    return !!(obj && obj.nodeType === 1);
+  };
+
+  _.isEmpty = function(obj) {
+    if (obj == null) return true;
+    if (isArrayLike(obj) && (_.isArray(obj) || _.isString(obj) || _.isArguments(obj))) return obj.length === 0;
+    return _.keys(obj).length === 0;
+  }
+
+  _.isArray = nativeIsArray || function(obj) {
+    return toString.call(obj) === '[object Array]';
+  }
+
+  // todo why 'function'
+  _.isObject = function (obj) {
+    var type = typeof obj;
+    return type === 'function' || type === 'object' && !!obj;
+  }
+
+  _.isMatch = function (object, attrs) {
+    var keys = _.keys(attrs), length = keys.length;
+    if (object == null) return !length;
+    // todo Object 转成对象?
+    var obj = Object(object);
+    for (var i = 0; i < length; i++) {
+      var key = keys[i];
+      if (obj[key] !== attrs[key] || !(key in obj)) return false;
+    }
+    return true;
+  }
+
+  if (!_.isArguments(arguments)) {
+    _.isArguments = function(obj) {
+      return has(obj, 'callee');
+    };
+  }
+
+  // todo
+  _.isFinite = function(obj) {
+    return !_.isSymbol(obj) && isFinite(obj) && !isNaN(parseFloat(obj));
+  };
+
+  _.isBoolean = function(obj) {
+    return obj === true || obj === false || toString.call(obj) === '[object Boolean]';
+  };
+
+  _.isNull = function(obj) {
+    return obj === null;
+  };
+
+  _.isUndefined = function(obj) {
+    return obj === void 0;
+  };
 
   // function
 
