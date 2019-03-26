@@ -86,12 +86,12 @@
   }
 
   // 当有多个参数，可以把后面的参数放到list里
-  var restArguments = function(func, startIndex) {
+  var restArguments = function (func, startIndex) {
     startIndex = startIndex == null ? func.length - 1 : +startIndex;
-    return function() {
+    return function () {
       var length = Math.max(arguments.length - startIndex, 0),
-          rest = Array(length),
-          index = 0;
+        rest = Array(length),
+        index = 0;
       for (; index < length; index++) {
         rest[index] = arguments[index + startIndex];
       }
@@ -126,8 +126,8 @@
     return typeof length === 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
   };
 
-  var Ctor = function(){};
-  var baseCreate = function(prototype) {
+  var Ctor = function () { };
+  var baseCreate = function (prototype) {
     if (!_.isObject(prototype)) return {};
     if (nativeCreate) return nativeCreate(prototype);
     Ctor.prototype = prototype;
@@ -300,19 +300,19 @@
     return _.indexOf(obj, item, fromIndex) >= 0;
   }
 
-  _.pluck = function(obj, key) {
+  _.pluck = function (obj, key) {
     return _.map(obj, _.property(key));
   }
 
-  _.where = function(obj, attrs) {
+  _.where = function (obj, attrs) {
     return _.filter(obj, _.matcher(attrs));
   }
 
-  _.findWhere = function(obj, attrs) {
+  _.findWhere = function (obj, attrs) {
     return _.find(obj, _.matcher(attrs));
   };
 
-  _.invoke = restArguments(function(obj, path, args) {
+  _.invoke = restArguments(function (obj, path, args) {
     var contextPath, func;
     if (_.isFunction(path)) {
       func = path;
@@ -320,7 +320,7 @@
       contextPath = path.slice(0, -1);
       path = path[path.length - 1];
     }
-    return _.map(obj, function(context) {
+    return _.map(obj, function (context) {
       var method = func;
       if (!method) {
         if (contextPath && contextPath.length) {
@@ -333,7 +333,7 @@
     });
   });
 
-  _.max = function(obj, iteratee, context) {
+  _.max = function (obj, iteratee, context) {
     var result = -Infinity, lastComputed = -Infinty, value, computed;
     if (iteratee == null || typeof iteratee == 'number' && typeof obj[0] != 'object' && obj != null) {
       obj = isArrayLike(obj) ? obj : _.values(obj);
@@ -345,7 +345,7 @@
       }
     } else {
       iteratee = cb(iteratee, context);
-      _.each(obj, function(value, index, list) {
+      _.each(obj, function (value, index, list) {
         computed = iteratee(value, index, list);
         if (computed > result || computed === -Infinity && result === -Infinity) {
           result = value;
@@ -356,9 +356,9 @@
     return result;
   };
 
-  _.min = function(obj, iteratee, context) {
+  _.min = function (obj, iteratee, context) {
     var result = Infinity, lastComputed = Infinity,
-        value, computed;
+      value, computed;
     if (iteratee == null || typeof iteratee == 'number' && typeof obj[0] != 'object' && obj != null) {
       obj = isArrayLike(obj) ? obj : _.values(obj);
       for (var i = 0, length = obj.length; i < length; i++) {
@@ -369,7 +369,7 @@
       }
     } else {
       iteratee = cb(iteratee, context);
-      _.each(obj, function(v, index, list) {
+      _.each(obj, function (v, index, list) {
         computed = iteratee(v, index, list);
         if (computed < lastComputed || computed === Infinity && result === Infinity) {
           result = v;
@@ -380,16 +380,16 @@
     return result;
   };
 
-  _.sortBy = function(obj, iteratee, context) {
+  _.sortBy = function (obj, iteratee, context) {
     var index = 0;
     iteratee = cb(iteratee, context);
-    return _.pluck(_.map(obj, function(value, key, list) {
+    return _.pluck(_.map(obj, function (value, key, list) {
       return {
         value: value,
         index: index++,
         criteria: iteratee(value, key, list)
       }
-    }).sort(function(left, right) {
+    }).sort(function (left, right) {
       var a = left.criteria;
       var b = right.criteria;
       if (a !== b) {
@@ -399,11 +399,11 @@
     }), 'value')
   }
 
-  var group = function(behavior, partition) {
-    return function(obj, iteratee, context) {
+  var group = function (behavior, partition) {
+    return function (obj, iteratee, context) {
       var result = partition ? [[], []] : {};
       iteratee = cb(iteratee, context);
-      _.each(obj, function(value, index) {
+      _.each(obj, function (value, index) {
         var key = iteratee(value, index, obj);
         behavior(result, value, key);
       });
@@ -411,19 +411,19 @@
     };
   }
 
-  _.groupBy = group(function(result, value, key) {
+  _.groupBy = group(function (result, value, key) {
     if (_.has(result, key)) result[key].push(value); else result[key] = [value];
   })
 
-  _.indexBy = group(function(result, value, key) {
+  _.indexBy = group(function (result, value, key) {
     result[key] = value;
   });
 
-  _.countBy = group(function(result, value, key) {
+  _.countBy = group(function (result, value, key) {
     if (has(result, key)) result[key]++; else result[key] = 1;
   });
 
-  _.sample = function(obj, n, guard) {
+  _.sample = function (obj, n, guard) {
     if (n == null || guard) {
       if (!isArrayLike(obj)) obj = _.values(obj);
       return obj[_.random(obj.length - 1)];
@@ -442,13 +442,13 @@
   };
 
   // todo 洗牌算法
-  _.shuffle = function(obj) {
+  _.shuffle = function (obj) {
     return _.sample(obj, Infinity);
   };
 
   // todo
   var reStrSymbol = /[^\ud800-\udfff]|[\ud800-\udbff][\udc00-\udfff]|[\ud800-\udfff]/g;
-  _.toArray = function(obj) {
+  _.toArray = function (obj) {
     if (!obj) return [];
     if (_.isArray(obj)) return slice.call(obj);
     if (_.isString(obj)) {
@@ -459,43 +459,43 @@
     return _.values(obj);
   };
 
-  _.size = function(obj) {
+  _.size = function (obj) {
     if (obj == null) return 0;
     return isArrayLike(obj) ? obj.length : _.keys(obj).length;
   };
 
-  _.partition = group(function(result, value, pass) {
+  _.partition = group(function (result, value, pass) {
     result[pass ? 0 : 1].push(value);
   }, true);
 
   // Array
   // -----------------------------------
 
-  _.first = _.head = _.take = function(array, n, guard) {
+  _.first = _.head = _.take = function (array, n, guard) {
     if (array == null || array.length < 1) return n == null ? void 0 : [];
     if (n == null || guard) return array[0];
     return _.initial(array, array.length - n);
   };
 
-  _.initial = function(array, n, guard) {
+  _.initial = function (array, n, guard) {
     return slice.call(array, 0, Math.max(0, array.length - (n == null || guard ? 1 : n)));
   };
 
-  _.last = function(array, n, guard) {
+  _.last = function (array, n, guard) {
     if (array == null || array.length < 1) return n == null ? void 0 : [];
     if (n == null || guard) return array[array.length - 1];
     return _.rest(array, Math.max(0, array.length - n));
   };
 
-  _.rest = _.tail = _.drop = function(array, n, guard) {
+  _.rest = _.tail = _.drop = function (array, n, guard) {
     return slice.call(array, n == null || guard ? 1 : n);
   };
 
-  _.compact = function(array) {
+  _.compact = function (array) {
     return _.filter(array, Boolean);
   };
 
-  var flatten = function(input, shallow, strict, output) {
+  var flatten = function (input, shallow, strict, output) {
     output = output || [];
     var idx = output.length;
     for (var i = 0, length = getLength(input); i < length; i++) {
@@ -515,23 +515,23 @@
     return output;
   };
 
-  _.flatten = function(array, shallow) {
+  _.flatten = function (array, shallow) {
     return flatten(array, shallow, false)
   }
 
-  _.difference = restArguments(function(array, rest) {
+  _.difference = restArguments(function (array, rest) {
     rest = flatten(rest, true, true);
-    return _.filter(array, function(value){
+    return _.filter(array, function (value) {
       return !_.contains(rest, value);
     });
   });
 
-  _.without = restArguments(function(array, otherArrays) {
+  _.without = restArguments(function (array, otherArrays) {
     return _.difference(array, otherArrays);
   });
 
   // tod
-  _.uniq = _.unique = function(array, isSorted, iteratee, context) {
+  _.uniq = _.unique = function (array, isSorted, iteratee, context) {
     if (!_.isBoolean(isSorted)) {
       context = iteratee;
       iteratee = isSorted;
@@ -542,7 +542,7 @@
     var seen = [];
     for (var i = 0, length = getLength(array); i < length; i++) {
       var value = array[i],
-          computed = iteratee ? iteratee(value, i, array) : value;
+        computed = iteratee ? iteratee(value, i, array) : value;
       if (isSorted && !iteratee) {
         if (!i || seen !== computed) result.push(value);
         seen = computed;
@@ -558,11 +558,11 @@
     return result;
   };
 
-  _.union = restArguments(function(arrays) {
+  _.union = restArguments(function (arrays) {
     return _.uniq(flatten(arrays, true, true));
   });
 
-  _.intersection = function(array) {
+  _.intersection = function (array) {
     var result = [];
     argsLength = arguments.length;
     for (var i = 0; i < array; i++) {
@@ -577,7 +577,7 @@
     return result;
   }
 
-  _.unzip = function(array) {
+  _.unzip = function (array) {
     var length = array && _.max(array, getLength).length || 0;
     var result = Array(length);
 
@@ -589,7 +589,7 @@
 
   _.zip = restArguments(_.unzip);
 
-  _.object = function(list, values) {
+  _.object = function (list, values) {
     var result = {};
     for (var i = 0, length = getLength(list); i < length; i++) {
       if (values) {
@@ -676,11 +676,11 @@
     };
   };
 
-  _.propertyOf = function(obj) {
+  _.propertyOf = function (obj) {
     if (obj == null) {
-      return function(){};
+      return function () { };
     }
-    return function(path) {
+    return function (path) {
       return !_.isArray(path) ? obj[path] : deepGet(obj, path);
     };
   };
@@ -706,16 +706,16 @@
 
   _.extendOwn = _.assign = createAssigner(_.keys);
 
-  _.clone = function(obj) {
+  _.clone = function (obj) {
     if (!_.isObject(obj)) return obj;
     return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
   }
 
-  _.mapOject = function(obj, iteratee, context) {
+  _.mapOject = function (obj, iteratee, context) {
     iteratee = cb(iteratee, context);
     var keys = _.keys(obj),
-        length = keys.length;
-        results = {};
+      length = keys.length;
+    results = {};
     for (var i = 0; i < length; i++) {
       var currentKey = keys[i];
       results[currentKey] = iteratee(obj[currentKey], currentKey, obj);
@@ -723,21 +723,21 @@
     return results;
   }
 
-  _.pairs = function(obj) {
+  _.pairs = function (obj) {
     var keys = _.keys(obj),
-        length = keys.length;
-        pairs = Array(length);
+      length = keys.length;
+    pairs = Array(length);
     for (var i = 0; i < length; i++) {
       var currentKey = keys[i]
       pairs[i] = [currentKey, obj[currentKey]];
     }
     return pairs;
   }
-  
-  _.invert = function(obj) {
+
+  _.invert = function (obj) {
     var keys = _.keys(obj),
-        length = keys.length;
-        results = {};
+      length = keys.length;
+    results = {};
     for (var i = 0; i < length; i++) {
       var currentKey = keys[i];
       results[obj[currentKey]] = currentKey;
@@ -745,13 +745,13 @@
     return results;
   }
 
-  _.create = function(prototype, props) {
+  _.create = function (prototype, props) {
     var result = baseCreate(prototype);
     if (props) return _.extendOwn(result, props);
     return result;
   }
 
-  _.funciotns = _.methods = function(obj) {
+  _.funciotns = _.methods = function (obj) {
     var names = [];
     for (var key in obj) {
       if (_.isFunction(obj[key])) names.push(key);
@@ -759,11 +759,11 @@
     return names.sort();
   }
 
-  var keyInObj = function(value, key, obj) {
+  var keyInObj = function (value, key, obj) {
     return key in obj;
   };
 
-  _.pick = restArguments(function(obj, keys) {
+  _.pick = restArguments(function (obj, keys) {
     var results = {}, iteratee = keys[0];
     if (obj == null) return results;
     if (_.isFunction(iteratee)) { // 取反
@@ -782,14 +782,14 @@
     return result;
   });
 
-  _.omit = restArguments(function(obj, keys) {
+  _.omit = restArguments(function (obj, keys) {
     var iteratee = key[0], context;
     if (_.isFunction(iteratee)) {
       iteratee = _.negate(iteratee);
-      if (keys.length > 1) context = keys[1]; 
+      if (keys.length > 1) context = keys[1];
     } else {
       keys = _.map(flatten(keys, false, false), String);
-      iteratee = function(value, key) {
+      iteratee = function (value, key) {
         return !_.contains(keys, key);
       };
     }
@@ -799,12 +799,12 @@
   _.defaults = createAssigner(_.allKeys, true);
 
   // 中间结果进行操作
-  _.tap = function(obj, interceptor) {
+  _.tap = function (obj, interceptor) {
     interceptor(obj);
     return obj;
   };
 
-  _.has = function(obj, path) {
+  _.has = function (obj, path) {
     if (!_.isArray(path)) {
       return has(obj, path);
     }
@@ -818,17 +818,17 @@
     return !!length;
   }
 
-  _.isElement = function(obj) {
+  _.isElement = function (obj) {
     return !!(obj && obj.nodeType === 1);
   };
 
-  _.isEmpty = function(obj) {
+  _.isEmpty = function (obj) {
     if (obj == null) return true;
     if (isArrayLike(obj) && (_.isArray(obj) || _.isString(obj) || _.isArguments(obj))) return obj.length === 0;
     return _.keys(obj).length === 0;
   }
 
-  _.isArray = nativeIsArray || function(obj) {
+  _.isArray = nativeIsArray || function (obj) {
     return toString.call(obj) === '[object Array]';
   }
 
@@ -851,25 +851,25 @@
   }
 
   if (!_.isArguments(arguments)) {
-    _.isArguments = function(obj) {
+    _.isArguments = function (obj) {
       return has(obj, 'callee');
     };
   }
 
   // todo
-  _.isFinite = function(obj) {
+  _.isFinite = function (obj) {
     return !_.isSymbol(obj) && isFinite(obj) && !isNaN(parseFloat(obj));
   };
 
-  _.isBoolean = function(obj) {
+  _.isBoolean = function (obj) {
     return obj === true || obj === false || toString.call(obj) === '[object Boolean]';
   };
 
-  _.isNull = function(obj) {
+  _.isNull = function (obj) {
     return obj === null;
   };
 
-  _.isUndefined = function(obj) {
+  _.isUndefined = function (obj) {
     return obj === void 0;
   };
 
@@ -881,6 +881,117 @@
     }
   }
 
+  // Internal recursive comparison function for `isEqual`.
+  var eq, deepEq;
+  eq = function (a, b, aStack, bStack) {
+    // Identical objects are equal. `0 === -0`, but they aren't identical.
+    // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
+    if (a === b) return a !== 0 || 1 / a === 1 / b;
+    // `null` or `undefined` only equal to itself (strict comparison).
+    if (a == null || b == null) return false;
+    // `NaN`s are equivalent, but non-reflexive.
+    if (a !== a) return b !== b;
+    // Exhaust primitive checks
+    var type = typeof a;
+    if (type !== 'function' && type !== 'object' && typeof b != 'object') return false;
+    return deepEq(a, b, aStack, bStack);
+  };
+
+  // Internal recursive comparison function for `isEqual`.
+  deepEq = function (a, b, aStack, bStack) {
+    // Unwrap any wrapped objects.
+    if (a instanceof _) a = a._wrapped;
+    if (b instanceof _) b = b._wrapped;
+    // Compare `[[Class]]` names.
+    var className = toString.call(a);
+    if (className !== toString.call(b)) return false;
+    switch (className) {
+      // Strings, numbers, regular expressions, dates, and booleans are compared by value.
+      case '[object RegExp]':
+      // RegExps are coerced to strings for comparison (Note: '' + /a/i === '/a/i')
+      case '[object String]':
+        // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
+        // equivalent to `new String("5")`.
+        return '' + a === '' + b;
+      case '[object Number]':
+        // `NaN`s are equivalent, but non-reflexive.
+        // Object(NaN) is equivalent to NaN.
+        if (+a !== +a) return +b !== +b;
+        // An `egal` comparison is performed for other numeric values.
+        return +a === 0 ? 1 / +a === 1 / b : +a === +b;
+      case '[object Date]':
+      case '[object Boolean]':
+        // Coerce dates and booleans to numeric primitive values. Dates are compared by their
+        // millisecond representations. Note that invalid dates with millisecond representations
+        // of `NaN` are not equivalent.
+        return +a === +b;
+      case '[object Symbol]':
+        return SymbolProto.valueOf.call(a) === SymbolProto.valueOf.call(b);
+    }
+
+    var areArrays = className === '[object Array]';
+    if (!areArrays) {
+      if (typeof a != 'object' || typeof b != 'object') return false;
+
+      // Objects with different constructors are not equivalent, but `Object`s or `Array`s
+      // from different frames are.
+      var aCtor = a.constructor, bCtor = b.constructor;
+      if (aCtor !== bCtor && !(_.isFunction(aCtor) && aCtor instanceof aCtor &&
+        _.isFunction(bCtor) && bCtor instanceof bCtor)
+        && ('constructor' in a && 'constructor' in b)) {
+        return false;
+      }
+    }
+    // Assume equality for cyclic structures. The algorithm for detecting cyclic
+    // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
+
+    // Initializing stack of traversed objects.
+    // It's done here since we only need them for objects and arrays comparison.
+    aStack = aStack || [];
+    bStack = bStack || [];
+    var length = aStack.length;
+    while (length--) {
+      // Linear search. Performance is inversely proportional to the number of
+      // unique nested structures.
+      if (aStack[length] === a) return bStack[length] === b;
+    }
+
+    // Add the first object to the stack of traversed objects.
+    aStack.push(a);
+    bStack.push(b);
+
+    // Recursively compare objects and arrays.
+    if (areArrays) {
+      // Compare array lengths to determine if a deep comparison is necessary.
+      length = a.length;
+      if (length !== b.length) return false;
+      // Deep compare the contents, ignoring non-numeric properties.
+      while (length--) {
+        if (!eq(a[length], b[length], aStack, bStack)) return false;
+      }
+    } else {
+      // Deep compare objects.
+      var keys = _.keys(a), key;
+      length = keys.length;
+      // Ensure that both objects contain the same number of properties before comparing deep equality.
+      if (_.keys(b).length !== length) return false;
+      while (length--) {
+        // Deep compare each member
+        key = keys[length];
+        if (!(has(b, key) && eq(a[key], b[key], aStack, bStack))) return false;
+      }
+    }
+    // Remove the first object from the stack of traversed objects.
+    aStack.pop();
+    bStack.pop();
+    return true;
+  };
+
+  // Perform a deep comparison to check if two objects are equal.
+  _.isEqual = function (a, b) {
+    return eq(a, b);
+  };
+
   // Utility
   _.identity = function (value) {
     return value;
@@ -888,7 +999,7 @@
 
   _.restArguments = restArguments;
 
-  _.random = function(min, max) {
+  _.random = function (min, max) {
     if (max == null) {
       max = min;
       min = 0;
