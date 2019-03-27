@@ -873,14 +873,6 @@
     return obj === void 0;
   };
 
-  // function
-
-  _.negate = function (predicate) {
-    return function () {
-      return !predicate.apply(this, arguments)
-    }
-  }
-
   // Internal recursive comparison function for `isEqual`.
   var eq, deepEq;
   eq = function (a, b, aStack, bStack) {
@@ -991,6 +983,41 @@
   _.isEqual = function (a, b) {
     return eq(a, b);
   };
+
+  // function
+
+  _.negate = function (predicate) {
+    return function () {
+      return !predicate.apply(this, arguments)
+    }
+  }
+
+  var executeBound = function (sourceFunc, boundFunc, context, callingContext, args) {
+    if (!(callingContext instanceof boundFunc)) return sourceFunc.apply(context, args);
+    var self = baseCreate(sourceFunc.prototype);
+    var result = sourceFunc.apply(self, args);
+    if (_.isObject(result)) return result;
+    return self;
+  };
+
+  // todo
+  _.bind = restArguments(function (func, context, args) {
+    if (!_.isFunction(func)) throw new TypeError('Bind must be called on a function');
+    var bound = restArguments(function (callArgs) {
+      return executeBound(func, bound, context, this, args.concat(callArgs));
+    });
+    return bound;
+  });
+
+  _.bindAll = restArguments(function (obj, keys) {
+    keys = flatten(keys, false, false);
+    var index = keys.length;
+    if (index < 1) throw new Error('bindAll must be passed function names');
+    while (index--) {
+      var key = keys[index];
+      obj[key] = _.bind(obj[key], obj);
+    }
+  });
 
   // Utility
   _.identity = function (value) {
