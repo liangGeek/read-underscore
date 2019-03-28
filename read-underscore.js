@@ -1019,6 +1019,23 @@
     }
   });
 
+  _.memoize = function(func, hasher) {
+    var memoize = function(key) {
+      var cache = memoize.cache;
+      var address = '' + (hasher ? hasher.apply(this, arguments) : key);
+      if (!has(cache, address)) cache[address] = func.apply(this, arguments);
+      return cache[address];
+    };
+    memoize.cache = {};
+    return memoize;
+  };
+
+  _.delay = restArguments(function(func, wait, args) {
+    return setTimeout(function() {
+      return func.apply(null, args);
+    }, wait);
+  });
+
   // Utility
   _.identity = function (value) {
     return value;
