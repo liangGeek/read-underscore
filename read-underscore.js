@@ -1122,6 +1122,27 @@
     return debounced;
   };
 
+  _.before = function(times, func) {
+    var memo;
+    return function() {
+      if (--times > 0) {
+        memo = func.apply(this, arguments);
+      }
+      if (times <= 1) func = null;
+      return memo;
+    };
+  };
+
+  _.once = _.partial(_.before, 2);
+
+  _.after = function(times, func) {
+    return function() {
+      if (--times < 1) {
+        return func.apply(this, arguments);
+      }
+    };
+  };
+
   // Utility
   _.identity = function (value) {
     return value;
