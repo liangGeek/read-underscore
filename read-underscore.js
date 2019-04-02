@@ -468,6 +468,7 @@
     result[pass ? 0 : 1].push(value);
   }, true);
 
+  _.defer = _.partial(_.delay, _, 1);
   // Array
   // -----------------------------------
 
@@ -1122,6 +1123,10 @@
     return debounced;
   };
 
+  _.wrap = function(func, wrapper) {
+    return _.partial(wrapper, func);
+  };
+
   _.before = function(times, func) {
     var memo;
     return function() {
@@ -1140,6 +1145,17 @@
       if (--times < 1) {
         return func.apply(this, arguments);
       }
+    };
+  };
+
+  _.compose = function() {
+    var args = arguments;
+    var start = args.length - 1;
+    return function() {
+      var i = start;
+      var result = args[start].apply(this, arguments);
+      while (i--) result = args[i].call(this, result);
+      return result;
     };
   };
 
