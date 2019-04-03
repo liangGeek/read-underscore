@@ -668,24 +668,6 @@
     return _.isNumber(obj) && isNaN(obj);
   }
 
-  _.property = function (path) {
-    if (!_.isArray(path)) {
-      return shallowProperty(path);
-    }
-    return function (obj) {
-      return deepGet(obj, path);
-    };
-  };
-
-  _.propertyOf = function (obj) {
-    if (obj == null) {
-      return function () { };
-    }
-    return function (path) {
-      return !_.isArray(path) ? obj[path] : deepGet(obj, path);
-    };
-  };
-
   var createAssigner = function (keyFunc, defaults) {
     return function (obj) {
       var length = arguments;
@@ -1160,9 +1142,21 @@
   };
 
   // Utility
+
+  _.noConflict = function() {
+    root._ = previousUnderscore;
+    return this;
+  };
+
   _.identity = function (value) {
     return value;
   }
+
+  _.constant = function(value) {
+    return function() {
+      return value;
+    };
+  };
 
   _.restArguments = restArguments;
 
@@ -1172,6 +1166,35 @@
       min = 0;
     }
     return min + Math.floor(Math.random() * (max - min + 1));
+  };
+
+  _.property = function (path) {
+    if (!_.isArray(path)) {
+      return shallowProperty(path);
+    }
+    return function (obj) {
+      return deepGet(obj, path);
+    };
+  };
+
+  _.propertyOf = function (obj) {
+    if (obj == null) {
+      return function () { };
+    }
+    return function (path) {
+      return !_.isArray(path) ? obj[path] : deepGet(obj, path);
+    };
+  };
+
+  _.times = function(n, iteratee, context) {
+    var accum = Array(Math.max(0, n));
+    iteratee = optimizeCb(iteratee, context, 1);
+    for (var i = 0; i < n; i++) accum[i] = iteratee(i);
+    return accum;
+  };
+
+  _.now = Date.now || function() {
+    return new Date().getTime();
   };
 
 }())
